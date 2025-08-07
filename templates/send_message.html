@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Send Message - SecureChat{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i data-feather="edit" class="me-2"></i>
+                    Send Encrypted Message
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="recipient_email" class="form-label">
+                            <i data-feather="user" class="me-1"></i>
+                            Recipient Email
+                        </label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="recipient_email" 
+                               name="recipient_email" 
+                               required 
+                               list="available_users"
+                               placeholder="Enter recipient's email address">
+                        <datalist id="available_users">
+                            {% for user in available_users %}
+                                <option value="{{ user.email }}">{{ user.email }}</option>
+                            {% endfor %}
+                        </datalist>
+                        <div class="form-text">The recipient must be a verified SecureChat user</div>
+                        
+                        {% if available_users %}
+                        <div class="mt-2">
+                            <small class="text-muted">Available users:</small>
+                            <div class="mt-1">
+                                {% for user in available_users %}
+                                    <span class="badge bg-light text-dark me-1 user-suggestion" 
+                                          data-email="{{ user.email }}" 
+                                          style="cursor: pointer;">
+                                        {{ user.email }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="message_content" class="form-label">
+                            <i data-feather="message-square" class="me-1"></i>
+                            Message Content
+                        </label>
+                        <textarea class="form-control" 
+                                  id="message_content" 
+                                  name="message_content" 
+                                  rows="8" 
+                                  required 
+                                  placeholder="Type your message here..."></textarea>
+                        <div class="form-text">Your message will be encrypted with RSA-2048 before sending</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i data-feather="arrow-left" class="me-2"></i>
+                            Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i data-feather="send" class="me-2"></i>
+                            Send Encrypted Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Security Info -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i data-feather="shield" class="me-2"></i>
+                    How Your Message is Protected
+                </h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled mb-0">
+                            <li><i data-feather="lock" class="text-success me-2"></i>Encrypted with recipient's public key</li>
+                            <li><i data-feather="eye-off" class="text-success me-2"></i>Only recipient can decrypt it</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled mb-0">
+                            <li><i data-feather="server" class="text-success me-2"></i>Server cannot read your message</li>
+                            <li><i data-feather="shield" class="text-success me-2"></i>End-to-end encryption guaranteed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Pre-fill recipient from URL parameter or session storage
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedRecipient = urlParams.get('recipient') || sessionStorage.getItem('preselected_recipient');
+    
+    if (preselectedRecipient) {
+        document.getElementById('recipient_email').value = preselectedRecipient;
+        sessionStorage.removeItem('preselected_recipient');
+    }
+    
+    // Make user suggestion badges clickable
+    const userSuggestions = document.querySelectorAll('.user-suggestion');
+    userSuggestions.forEach(badge => {
+        badge.addEventListener('click', function() {
+            const email = this.dataset.email;
+            document.getElementById('recipient_email').value = email;
+            
+            // Visual feedback
+            userSuggestions.forEach(b => b.classList.remove('bg-primary', 'text-white'));
+            userSuggestions.forEach(b => b.classList.add('bg-light', 'text-dark'));
+            this.classList.remove('bg-light', 'text-dark');
+            this.classList.add('bg-primary', 'text-white');
+        });
+    });
+});
+</script>
+{% endblock %}

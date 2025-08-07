@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}SecureChat - End-to-End Encrypted Messaging{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Hero Section -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                <i data-feather="shield" class="me-3"></i>
+                SecureChat
+            </h1>
+            <p class="lead">Secure messaging with RSA-2048 end-to-end encryption. Your messages, completely private.</p>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-feather="lock"></i>
+                    </div>
+                    <h5>End-to-End Encryption</h5>
+                    <p>Messages are encrypted with RSA-2048 before leaving your device. Only the recipient can decrypt them.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-feather="key"></i>
+                    </div>
+                    <h5>Secure Key Management</h5>
+                    <p>Each user gets their own RSA key pair. Your private key never leaves your session.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-feather="shield"></i>
+                    </div>
+                    <h5>Privacy First</h5>
+                    <p>No one can read your messages - not even the server. True privacy guaranteed.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Features -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="shield" class="me-2"></i>
+                    Security Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i data-feather="check" class="text-success me-1"></i> RSA-2048 Encryption</li>
+                            <li><i data-feather="check" class="text-success me-1"></i> Secure Password Hashing</li>
+                            <li><i data-feather="check" class="text-success me-1"></i> Session-based Authentication</li>
+                            <li><i data-feather="check" class="text-success me-1"></i> No Message Storage in Plain Text</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i data-feather="check" class="text-success me-1"></i> Email Verification</li>
+                            <li><i data-feather="check" class="text-success me-1"></i> Secure Key Generation</li>
+                            <li><i data-feather="check" class="text-success me-1"></i> Private Key Protection</li>
+                            <li><i data-feather="check" class="text-success me-1"></i> Forward Secrecy</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i data-feather="info" class="me-2"></i>
+                    All messages are encrypted before transmission and can only be decrypted by the intended recipient
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="zap" class="me-2"></i>
+                    How It Works
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="step-number">1</div>
+                        <h6>Register</h6>
+                        <p class="small">Create account and get instant access</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="step-number">2</div>
+                        <h6>Auto Setup</h6>
+                        <p class="small">RSA keys generated automatically</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="step-number">3</div>
+                        <h6>Start Chatting</h6>
+                        <p class="small">Send encrypted messages instantly</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="step-number">4</div>
+                        <h6>Stay Private</h6>
+                        <p class="small">End-to-end encryption guaranteed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="text-center">
+            {% if user %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg me-3">
+                    <i data-feather="message-square" class="me-2"></i>
+                    Go to Dashboard
+                </a>
+                <a href="{{ url_for('send_message') }}" class="btn btn-outline-primary btn-lg">
+                    <i data-feather="edit" class="me-2"></i>
+                    Send Message
+                </a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-3">
+                    <i data-feather="user-plus" class="me-2"></i>
+                    Get Started
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                    <i data-feather="log-in" class="me-2"></i>
+                    Log In
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

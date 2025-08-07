@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Users - SecureChat{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i data-feather="users" class="me-2"></i>
+                Verified Users
+            </h2>
+            <a href="{{ url_for('send_message') }}" class="btn btn-primary">
+                <i data-feather="edit" class="me-2"></i>
+                Send Message
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if users %}
+    <div class="row">
+        {% for user in users %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar me-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px; font-size: 1.25rem;">
+                                    {{ user.email[0].upper() }}
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="card-title mb-1">{{ user.email }}</h6>
+                                <small class="text-muted">
+                                    <i data-feather="calendar" class="me-1"></i>
+                                    Joined {{ user.created_at.strftime('%B %Y') }}
+                                </small>
+                                <div class="mt-2">
+                                    {% if user.has_keys %}
+                                        <span class="badge bg-success">
+                                            <i data-feather="shield" class="me-1"></i>
+                                            Encryption Ready
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i data-feather="alert-triangle" class="me-1"></i>
+                                            No Encryption Keys
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="d-grid">
+                            {% if user.has_keys %}
+                                <a href="{{ url_for('send_message') }}?recipient={{ user.email }}" class="btn btn-outline-primary">
+                                    <i data-feather="send" class="me-2"></i>
+                                    Send Message
+                                </a>
+                            {% else %}
+                                <button class="btn btn-outline-secondary" disabled>
+                                    <i data-feather="x-circle" class="me-2"></i>
+                                    Cannot Send (No Keys)
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Users Summary -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <h4 class="text-primary">{{ users|length }}</h4>
+                    <p class="mb-0">Total Users</p>
+                </div>
+                <div class="col-md-4">
+                    <h4 class="text-success">{{ users|selectattr('has_keys')|list|length }}</h4>
+                    <p class="mb-0">Encryption Ready</p>
+                </div>
+                <div class="col-md-4">
+                    <h4 class="text-warning">{{ (users|length) - (users|selectattr('has_keys')|list|length) }}</h4>
+                    <p class="mb-0">Setting Up Keys</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i data-feather="users" class="text-muted mb-3" style="width: 64px; height: 64px;"></i>
+        <h5 class="text-muted">No other users found</h5>
+        <p class="text-muted">Be the first to invite friends to SecureChat!</p>
+    </div>
+{% endif %}
+
+<script>
+// Pre-fill recipient email when coming from user card
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const recipient = urlParams.get('recipient');
+    
+    if (recipient) {
+        // Store recipient in session storage for send message page
+        sessionStorage.setItem('preselected_recipient', recipient);
+    }
+});
+</script>
+{% endblock %}

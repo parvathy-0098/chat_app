@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SecureChat{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i data-feather="layout" class="me-2"></i>
+                Dashboard
+            </h2>
+            <div>
+                <a href="{{ url_for('send_message') }}" class="btn btn-primary">
+                    <i data-feather="edit" class="me-2"></i>
+                    Send Message
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Stats Cards -->
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title">Unread Messages</h5>
+                        <h2 class="mb-0">{{ unread_count }}</h2>
+                    </div>
+                    <div class="ms-3">
+                        <i data-feather="mail" style="width: 40px; height: 40px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title">Messages Sent</h5>
+                        <h2 class="mb-0">{{ total_sent }}</h2>
+                    </div>
+                    <div class="ms-3">
+                        <i data-feather="send" style="width: 40px; height: 40px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title">Messages Received</h5>
+                        <h2 class="mb-0">{{ total_received }}</h2>
+                    </div>
+                    <div class="ms-3">
+                        <i data-feather="inbox" style="width: 40px; height: 40px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title">Account Status</h5>
+                        <h6 class="mb-0">
+                            {% if user.verified %}
+                                <i data-feather="check-circle" class="me-1"></i>
+                                Verified
+                            {% else %}
+                                <i data-feather="alert-circle" class="me-1"></i>
+                                Unverified
+                            {% endif %}
+                        </h6>
+                    </div>
+                    <div class="ms-3">
+                        <i data-feather="shield" style="width: 40px; height: 40px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Recent Messages -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="message-square" class="me-2"></i>
+                    Recent Messages
+                </h5>
+                <a href="{{ url_for('messages_view') }}" class="btn btn-sm btn-outline-primary">
+                    View All
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_messages %}
+                    <div class="list-group list-group-flush">
+                        {% for message in recent_messages %}
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">
+                                        <i data-feather="user" class="me-1"></i>
+                                        {{ message.sender.email }}
+                                    </div>
+                                    <small class="text-muted">
+                                        <i data-feather="clock" class="me-1"></i>
+                                        {{ message.sent_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </small>
+                                </div>
+                                {% if not message.read_at %}
+                                    <span class="badge bg-primary rounded-pill">New</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i data-feather="message-square" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                        <h6 class="text-muted">No messages yet</h6>
+                        <p class="text-muted mb-0">Your recent messages will appear here</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Account Info -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="user" class="me-2"></i>
+                    Account Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Email Address</label>
+                    <div class="fw-bold">{{ user.email }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Member Since</label>
+                    <div>{{ user.created_at.strftime('%B %d, %Y') }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Encryption Status</label>
+                    <div>
+                        {% if user.public_key %}
+                            <span class="badge bg-success">
+                                <i data-feather="shield" class="me-1"></i>
+                                RSA-2048 Enabled
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i data-feather="alert-triangle" class="me-1"></i>
+                                No Encryption Keys
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Verification Status</label>
+                    <div>
+                        {% if user.verified %}
+                            <span class="badge bg-success">
+                                <i data-feather="check-circle" class="me-1"></i>
+                                Verified
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning">
+                                <i data-feather="clock" class="me-1"></i>
+                                Pending Verification
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="zap" class="me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('send_message') }}" class="btn btn-primary">
+                        <i data-feather="edit" class="me-2"></i>
+                        Send New Message
+                    </a>
+                    <a href="{{ url_for('messages_view') }}" class="btn btn-outline-primary">
+                        <i data-feather="message-square" class="me-2"></i>
+                        View All Messages
+                    </a>
+                    <a href="{{ url_for('users_list') }}" class="btn btn-outline-secondary">
+                        <i data-feather="users" class="me-2"></i>
+                        Browse Users
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
